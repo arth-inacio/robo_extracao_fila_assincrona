@@ -7,10 +7,8 @@ from fake_useragent import FakeUserAgent
 
 class AsyncHttpx:
     """
-    Instancia um client assíncrono já passando as configurações padrões
-    para as spiders.
+    Instancia um client assíncrono já passando as configurações padrões.
     """
-
     session: AsyncClient
 
     def __init__(

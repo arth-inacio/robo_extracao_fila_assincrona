@@ -1,8 +1,8 @@
 import asyncio
-from coletor import Coletor
+from servimed_scraper import ServimedScraper
 
 async def main():
-    coletor = Coletor("usuario", "senha")
+    coletor = ServimedScraper("usuario", "senha")
     await coletor._coletor_cadastros()
 
 if __name__ == "__main__":
