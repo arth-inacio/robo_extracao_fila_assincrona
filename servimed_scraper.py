@@ -19,7 +19,7 @@ class ServimedScraper:
     async def playwright_start(self) -> None:
         # Método que Inicializa o playwright
         self.playwright = await async_playwright().start()
-        self.browser = await self.playwright.chromium.launch(headless=False)
+        self.browser = await self.playwright.chromium.launch(headless=True)
         self.context = await self.browser.new_context()
         self.page = await self.context.new_page()
         self.page.set_default_timeout(40000)
@@ -30,10 +30,10 @@ class ServimedScraper:
         await self.playwright.stop()
         await self.browser.close()
 
-    async def _coletor_cadastros(self):
+    async def _coletor_cadastros(self) -> list:
+        itens = []
         await self.page.goto(f"{self.url}login")
         await self.page.wait_for_load_state("networkidle")
-        # await self.page.wait_for_selector("input[name=\"username\"]")
 
         await self.page.type("input[name=\"username\"]", self.usuario)
         await self.page.type("input[name=\"password\"]", self.senha)
@@ -66,7 +66,19 @@ class ServimedScraper:
             await self.page.click("//html/body/app-root/pedido/div[4]/div/div[1]/div/div/div[3]/button/i")
         response = await response_info.value
         body = await response.body()
-        print(json.loads(body))
-      
 
-        return
+        registros_dict  = json.loads(body)
+        produtos = registros_dict.get("lista", [])
+
+        for produto in produtos:
+           
+            informacoes = {
+                "ean": produto["codigoBarras"],
+                "codigo": produto["id"],
+                "descricao": produto["descricao"],
+                "preco_fabrica": produto["valorBase"],
+                "estoque": produto["quantidadeEstoque"],
+            }
+            itens.append(informacoes)
+
+        return itens
