@@ -7,7 +7,6 @@ def autenticar():
         "password": os.getenv("API_PASS"),
         "grant_type": "password"
     }
-
     response = requests.post("https://desafio.cotefacil.net/oauth/token", data=payload)
     response.raise_for_status()
     return response.json()["access_token"]
