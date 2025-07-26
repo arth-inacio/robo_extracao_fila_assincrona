@@ -1,7 +1,7 @@
 import re
 import json
 from utils.storage import salvar_json_local
-from playwright.async_api import async_playwright, TimeoutError
+from playwright.async_api import async_playwright
 
 class ServimedScraper:
     usuario: str
@@ -28,7 +28,6 @@ class ServimedScraper:
         # Finaliza a sessão do playwright
         await self.context.close()
         await self.playwright.stop()
-        await self.browser.close()
 
     async def _coletor_cadastros(self) -> list[dict]:
         itens = []

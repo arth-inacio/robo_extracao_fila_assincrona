@@ -19,11 +19,11 @@ async def main():
         try:
             produtos = await scraper._coletor_cadastros()
             print(f"✅ {len(produtos)} produtos coletados e salvos com sucesso.")
-        except TimeoutError:
+        except Exception:
             print(f"❌ Erro durante execução, tentando novamente: {_}")
             continue
-        finally:
-            await scraper.playwright_finish()
+        break
+    await scraper.playwright_finish()
 
 if __name__ == "__main__":
     asyncio.run(main())
