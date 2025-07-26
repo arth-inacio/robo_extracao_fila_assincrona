@@ -1,6 +1,6 @@
 import re
 import json
-from bs4 import BeautifulSoup
+from utils.storage import salvar_json_local
 from playwright.async_api import async_playwright, TimeoutError
 
 class ServimedScraper:
@@ -30,7 +30,7 @@ class ServimedScraper:
         await self.playwright.stop()
         await self.browser.close()
 
-    async def _coletor_cadastros(self) -> list:
+    async def _coletor_cadastros(self) -> list[dict]:
         itens = []
         await self.page.goto(f"{self.url}login")
         await self.page.wait_for_load_state("networkidle")
@@ -71,7 +71,6 @@ class ServimedScraper:
         produtos = registros_dict.get("lista", [])
 
         for produto in produtos:
-           
             informacoes = {
                 "ean": produto["codigoBarras"],
                 "codigo": produto["id"],
@@ -81,4 +80,5 @@ class ServimedScraper:
             }
             itens.append(informacoes)
 
+        salvar_json_local(itens, "produtos")
         return itens
