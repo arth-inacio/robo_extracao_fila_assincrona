@@ -1,12 +1,12 @@
+import asyncio
+import aio_pika
+import json
+import os
 from dotenv import load_dotenv
-from rq import Worker
-from redis import Redis
 from servimed_scraper import ServimedScraper
 from utils.autenticador import autenticar, enviar_callback
-import asyncio
 
 load_dotenv()
-redis_conn = Redis()
 
 async def processar_scraping(usuario, senha, callback_url):
     scraper = ServimedScraper(usuario, senha)
@@ -21,9 +21,23 @@ async def processar_scraping(usuario, senha, callback_url):
     token = autenticar()
     enviar_callback(callback_url, produtos, token)
 
-def job(usuario, senha, callback_url):
-    asyncio.run(processar_scraping(usuario, senha, callback_url))
+async def callback(message: aio_pika.IncomingMessage):
+    async with message.process():
+        dados = json.loads(message.body)
+        print("Mensagem recebida:", dados)
+        await processar_scraping(
+            dados["usuario"],
+            dados["senha"],
+            dados["callback_url"]
+        )
+
+async def main():
+    connection = await aio_pika.connect_robust(os.getenv("RABBITMQ_URL"))
+    channel = await connection.channel()
+    queue = await channel.declare_queue("servimed_queue", durable=True)
+    await queue.consume(callback)
+    print("Worker iniciado. Aguardando mensagens...")
+    await asyncio.Future()  # keep running
 
 if __name__ == "__main__":
-    worker = Worker(["default"], connection=redis_conn)
-    worker.work()
+    asyncio.run(main())

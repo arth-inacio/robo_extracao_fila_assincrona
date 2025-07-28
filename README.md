@@ -41,18 +41,14 @@ Client (API) → Redis Queue → Worker (Scraping) → Callback (FastAPI)
 
 <pre>
 desafio-python/
-│
-├── app/                       # API principal (FastAPI)
-│   ├── main.py                # Endpoints da API e callback receiver
-│   ├── schema.py              # Pydantic models
-│   └── queue.py               # Funções de enfileiramento (Redis)
-│
-├── worker/                    # Worker consumidor da fila
-│   └── main.py                # Robô Playwright assíncrono
-│
-├── .env                       # Variáveis de ambiente
-├── requirements.txt           # Dependências
-└── README.md
+├── utils/
+│   ├── autenticador.py
+│   └── storage.py
+├── worker.py         # consumer (agora com RabbitMQ)
+├── run.py            # publisher/enfileirador
+├── servimed_scraper.py
+├── requirements.txt
+├── .env
 </pre>
 
 <hr>

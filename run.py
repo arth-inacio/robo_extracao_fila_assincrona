@@ -1,29 +1,27 @@
 import asyncio
-from dotenv import load_dotenv
+import aio_pika
+import json
 import os
-from servimed_scraper import ServimedScraper
+from dotenv import load_dotenv
 
-async def main():
-    load_dotenv()  # Carrega as variáveis de ambiente do .env
+load_dotenv()
 
-    usuario = os.getenv("SERVIMED_USUARIO")
-    senha = os.getenv("SERVIMED_SENHA")
+async def enviar_tarefa(usuario, senha, callback_url):
+    connection = await aio_pika.connect_robust(os.getenv("RABBITMQ_URL"))
+    async with connection:
+        channel = await connection.channel()
+        queue = await channel.declare_queue("servimed_queue", durable=True)
 
-    if not usuario or not senha:
-        raise ValueError("Usuário e/ou senha não definidos no .env")
+        msg = {
+            "usuario": usuario,
+            "senha": senha,
+            "callback_url": callback_url
+        }
 
-    scraper = ServimedScraper(usuario, senha)
-    await scraper.playwright_start()
-
-    for _ in range(4):
-        try:
-            produtos = await scraper._coletor_cadastros()
-            print(f"✅ {len(produtos)} produtos coletados e salvos com sucesso.")
-        except Exception:
-            print(f"❌ Erro durante execução, tentando novamente: {_}")
-            continue
-        break
-    await scraper.playwright_finish()
+        await channel.default_exchange.publish(
+            aio_pika.Message(body=json.dumps(msg).encode()),
+            routing_key=queue.name
+        )
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    asyncio.run(enviar_tarefa("usuario", "senha", "https://callback.url"))
