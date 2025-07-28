@@ -1,0 +1,19 @@
+version: '3.9'
+
+services:
+  redis:
+    image: redis:7-alpine
+    container_name: redis
+    ports:
+      - "6379:6379"
+
+  worker:
+    build:
+      context: .
+    container_name: worker
+    depends_on:
+      - redis
+    env_file:
+      - app/.env
+    volumes:
+      - .:/app
