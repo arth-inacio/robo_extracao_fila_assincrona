@@ -1,6 +1,6 @@
 from rq import Queue
 from redis import Redis
-from worker import job
+from app.worker import job
 
 redis_conn = Redis()
 fila = Queue(connection=redis_conn)

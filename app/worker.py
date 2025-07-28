@@ -3,7 +3,7 @@ import aio_pika
 import json
 import os
 from dotenv import load_dotenv
-from servimed_scraper import ServimedScraper
+from app.coletor.servimed_scraper import ServimedScraper
 from utils.autenticador import autenticar, enviar_callback
 
 load_dotenv()

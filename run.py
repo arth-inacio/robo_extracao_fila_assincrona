@@ -24,4 +24,4 @@ async def enviar_tarefa(usuario, senha, callback_url):
         )
 
 if __name__ == "__main__":
-    asyncio.run(enviar_tarefa("usuario", "senha", "https://callback.url"))
+    asyncio.run(enviar_tarefa("usuario", "senha", "https://desafio.cotefacil.net"))
