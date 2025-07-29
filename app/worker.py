@@ -25,6 +25,9 @@ async def processar_scraping(usuario, senha, callback_url):
     enviar_callback(callback_url, produtos, token)
     print("Callback enviado com sucesso.")
 
+def job(usuario, senha, callback_url):
+    print(f"Executando job para {usuario} com callback {callback_url}")
+
 async def callback(message: aio_pika.IncomingMessage):
     async with message.process():
         try:

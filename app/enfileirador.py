@@ -6,8 +6,8 @@ redis_conn = Redis()
 fila = Queue(connection=redis_conn)
 
 tarefa = {
-    "usuario": "fornecedor_user",
-    "senha": "fornecedor_pass",
+    "usuario": "juliano@farmaprevonline.com.br",
+    "senha": "a007299A",
     "callback_url": "https://desafio.cotefacil.net"
 }
 
