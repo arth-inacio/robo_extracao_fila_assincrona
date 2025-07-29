@@ -19,7 +19,7 @@ class ServimedScraper:
     async def playwright_start(self) -> None:
         # Método que Inicializa o playwright
         self.playwright = await async_playwright().start()
-        self.browser = await self.playwright.chromium.launch(headless=True)
+        self.browser = await self.playwright.chromium.launch(headless=False)
         self.context = await self.browser.new_context()
         self.page = await self.context.new_page()
         self.page.set_default_timeout(40000)
@@ -40,6 +40,7 @@ class ServimedScraper:
         # Clica no botao de login
         await self.page.locator("button[class=\"btn btn-block btn-success\"]").click()
         await self.page.wait_for_selector("button[class=\"swal2-cancel swal2-styled\"]")
+        await self.page.wait_for_load_state("networkidle")
 
         # Cancela o alerta de atualização dos dados
         await self.page.locator("button[class=\"swal2-cancel swal2-styled\"]").click()
