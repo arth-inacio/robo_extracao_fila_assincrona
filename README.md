@@ -41,14 +41,19 @@ Client (API) → Redis Queue → Worker (Scraping) → Callback (FastAPI)
 
 <pre>
 desafio-python/
-├── utils/
-│   ├── autenticador.py
-│   └── storage.py
-├── worker.py         # consumer (agora com RabbitMQ)
-├── run.py            # publisher/enfileirador
-├── servimed_scraper.py
-├── requirements.txt
-├── .env
+├── app/
+│ ├── worker.py # Worker que executa scraping via fila
+│ ├── enqueue.py # Envia tarefas de scraping para a fila
+│ ├── coletor/
+│ │ └── servimed_scraper.py # Scraper Playwright
+│ ├── utils/
+│ │ ├── auth.py # Autenticação e callback
+│ │ └── storage.py # Salva JSON local
+│ └── .env # Variáveis de ambiente
+├── Dockerfile # Docker do projeto
+├── docker-compose.yml # Orquestra Redis + app
+├── requirements.txt # Dependências
+└── README.md
 </pre>
 
 <hr>

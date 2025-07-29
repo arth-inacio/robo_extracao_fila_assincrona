@@ -1,4 +1,4 @@
-version: '3.9'
+version: "3.9"
 
 services:
   redis:
@@ -7,13 +7,26 @@ services:
     ports:
       - "6379:6379"
 
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672" # painel web
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+
   worker:
     build:
       context: .
-    container_name: worker
+      dockerfile: Dockerfile
+    container_name: app_worker
     depends_on:
       - redis
-    env_file:
-      - app/.env
+      - rabbitmq
     volumes:
       - .:/app
+    env_file:
+      - app/.env
+    command: python app/worker.py

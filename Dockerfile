@@ -4,14 +4,16 @@ FROM python:3.11-slim
 
 WORKDIR /app
 
-# Instalar dependências do sistema (Playwright, Redis, etc)
+# Dependências do sistema
 RUN apt-get update && apt-get install -y curl git && \
-    pip install --upgrade pip && \
-    pip install playwright && \
-    playwright install chromium
+    apt-get clean
+
+COPY requirements.txt .
+RUN pip install --upgrade pip && pip install -r requirements.txt
 
 COPY . .
 
-RUN pip install -r requirements.txt
+# Instala Playwright + Chromium se necessário
+RUN pip install playwright && playwright install chromium
 
-CMD ["rq", "worker", "default"]
+CMD ["python", "app/worker.py"]
