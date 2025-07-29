@@ -24,12 +24,9 @@ async def processar_scraping(usuario, senha, callback_url):
     token = autenticar()
     enviar_callback(callback_url, produtos, token)
     print("Callback enviado com sucesso.")
-<<<<<<< HEAD
 
 def job(usuario, senha, callback_url):
     print(f"Executando job para {usuario} com callback {callback_url}")
-=======
->>>>>>> 5e20d6f (feat[servimed]: Adicionando arquivo para rodar spider loval & adicionando gitignore)
 
 async def callback(message: aio_pika.IncomingMessage):
     async with message.process():

@@ -14,7 +14,7 @@ async def enviar_mensagem():
     }
 
     mensagem = aio_pika.Message(body=json.dumps(dados).encode())
-    print(mensagem)
+ 
     await channel.default_exchange.publish(
         mensagem,
         routing_key="servimed_queue"
