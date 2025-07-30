@@ -9,14 +9,14 @@
 <p><strong>Fluxo simplificado:</strong></p>
 
 <pre>
-Client (API) → Redis Queue → Worker (Scraping) → Callback (FastAPI)
+Client (API) → RabbitMQ (Queue) → Worker (Scraping) → Callback (FastAPI)
 </pre>
 
 <hr>
 
 <h2>⚙️ Funcionalidades</h2>
 <ul>
-  <li>✅ Adicionar tarefas de scraping a uma fila (Redis)</li>
+  <li>✅ Adicionar tarefas de scraping a uma fila (Rabbitmq)</li>
   <li>✅ Consumir fila com worker assíncrono (Playwright + asyncio)</li>
   <li>✅ Enviar resultado do scraping via callback autenticado</li>
   <li>✅ Simular cenário real com autenticação, fila e retorno de resultado</li>
@@ -28,9 +28,9 @@ Client (API) → Redis Queue → Worker (Scraping) → Callback (FastAPI)
 <ul>
   <li><strong>Python 3.11+</strong></li>
   <li><strong>FastAPI</strong> – API moderna e assíncrona</li>
-  <li><strong>Redis</strong> – Gerenciamento de fila</li>
+  <li><strong>RabbitMQ</strong> – Gerenciamento de fila</li>
   <li><strong>Playwright</strong> – Robô de scraping assíncrono</li>
-  <li><strong>HTTPx</strong> – Requisições HTTP com suporte assíncrono</li>
+  <li><strong>HTTPx & Requests</strong> – Requisições HTTP com suporte assíncrono</li>
   <li><strong>Uvicorn</strong> – Servidor ASGI para FastAPI</li>
   <li><strong>Pydantic</strong> – Validação de dados</li>
 </ul>
@@ -78,9 +78,11 @@ venv\Scripts\activate        # Windows
 pip install -r requirements.txt
 </code></pre>
 
-<h3>4. Suba o Redis localmente</h3>
+<h3>4. Suba o RabbitMQ localmente</h3>
 <pre><code>
-docker run -p 6379:6379 --name redis -d redis
+sudo docker run -d --name rabbitmq -p 5672:5672 -p 15672:15672 \
+-e RABBITMQ_DEFAULT_USER=app -e RABBITMQ_DEFAULT_PASS=app123 -e RABBITMQ_DEFAULT_VHOST=app_vhost \
+rabbitmq:3-management
 </code></pre>
 
 <h3>5. Execute a API</h3>
@@ -91,7 +93,9 @@ uvicorn app.main:app --reload
 
 <h3>6. Execute o Worker</h3>
 <pre><code>
-python worker/main.py
+export AMQP_URL="amqp://app:app123@localhost:5672/app_vhost"
+export QUEUE="tarefas.servimed"
+python -m app.worker
 </code></pre>
 
 <hr>
@@ -128,10 +132,10 @@ Authorization: Bearer &lt;seu_token_aqui&gt;
   </thead>
   <tbody>
     <tr><td>API com FastAPI</td><td>✅ Concluído</td></tr>
-    <tr><td>Redis para enfileiramento</td><td>✅ Concluído</td></tr>
+    <tr><td>RabbitMQ para enfileiramento</td><td>✅ Concluído</td></tr>
     <tr><td>Worker com Playwright</td><td>✅ Concluído</td></tr>
     <tr><td>Callback autenticado</td><td>✅ Concluído</td></tr>
-    <tr><td>Deploy (Docker/Futuro)</td><td>⏳ Em planejamento</td></tr>
+    <tr><td>Deploy (Docker/Futuro)</td><td>✅ Concluído<</td></tr>
   </tbody>
 </table>
 
