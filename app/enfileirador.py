@@ -52,5 +52,5 @@ if __name__ == "__main__":
     enq.enqueue(
         usuario="juliano@farmaprevonline.com.br",
         senha="a007299A",
-        callback_url="http://localhost:8000/callback/produtos",
+        callback_url="https://desafio.cotefacil.net",
     )
