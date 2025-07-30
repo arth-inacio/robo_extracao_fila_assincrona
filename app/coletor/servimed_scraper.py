@@ -2,6 +2,7 @@ import re
 import json
 from utils.storage import salvar_json_local
 from playwright.async_api import async_playwright
+from typing import Any, Dict, List
 
 class ServimedScraper:
     usuario: str
@@ -29,7 +30,7 @@ class ServimedScraper:
         await self.context.close()
         await self.playwright.stop()
 
-    async def _coletor_cadastros(self) -> list[dict]:
+    async def _coletor_cadastros(self, termo_busca: str, cliente: str) -> list[dict]:
         itens = []
         await self.page.goto(f"{self.url}login")
         await self.page.wait_for_load_state("networkidle")
@@ -55,11 +56,11 @@ class ServimedScraper:
         await self.page.wait_for_load_state("networkidle")
 
         # Seleciona cliente com lista de produtos
-        await self.page.get_by_text("267511").click()
+        await self.page.get_by_text(cliente).click()
         await self.page.wait_for_load_state("networkidle")
 
         # Preenche o campo de pesquisa de produtos
-        await self.page.locator("input[role=\"combobox\"]").fill("PARACETAMOL")
+        await self.page.locator("input[role=\"combobox\"]").fill(termo_busca)
 
         # Clica no botao pesquisar e procura a requisição com os produtos
         async with self.page.expect_response(re.compile(r"carrinho/oculto")) as response_info:
@@ -72,7 +73,7 @@ class ServimedScraper:
 
         for produto in produtos:
             informacoes = {
-                "ean": produto["codigoBarras"],
+                "gtin": produto["codigoBarras"],
                 "codigo": produto["id"],
                 "descricao": produto["descricao"],
                 "preco_fabrica": produto["valorBase"],
@@ -82,3 +83,10 @@ class ServimedScraper:
 
         salvar_json_local(itens, "produtos")
         return itens
+    
+    async def collect_products(self, termo_busca: str = "PARACETAMOL", cliente: str = "267511") -> List[Dict[str, Any]]:
+        await self.playwright_start()
+        try:
+            return await self._coletor_cadastros(termo_busca=termo_busca, cliente=cliente)
+        finally:
+            await self.playwright_finish()
