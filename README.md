@@ -43,15 +43,15 @@ Client (API) → RabbitMQ (Queue) → Worker (Scraping) → Callback (FastAPI)
 desafio-python/
 ├── app/
 │ ├── worker.py # Worker que executa scraping via fila
-│ ├── enqueue.py # Envia tarefas de scraping para a fila
+│ ├── enfileirador.py # Envia tarefas de scraping para a fila
 │ ├── coletor/
 │ │ └── servimed_scraper.py # Scraper Playwright
 │ ├── utils/
-│ │ ├── auth.py # Autenticação e callback
+│ │ ├── autenticador.py # Autenticação e callback
 │ │ └── storage.py # Salva JSON local
 │ └── .env # Variáveis de ambiente
 ├── Dockerfile # Docker do projeto
-├── docker-compose.yml # Orquestra Redis + app
+├── docker-compose.yml # Orquestra rabbitmq + app
 ├── requirements.txt # Dependências
 └── README.md
 </pre>
@@ -135,7 +135,7 @@ Authorization: Bearer &lt;seu_token_aqui&gt;
     <tr><td>RabbitMQ para enfileiramento</td><td>✅ Concluído</td></tr>
     <tr><td>Worker com Playwright</td><td>✅ Concluído</td></tr>
     <tr><td>Callback autenticado</td><td>✅ Concluído</td></tr>
-    <tr><td>Deploy (Docker/Futuro)</td><td>✅ Concluído<</td></tr>
+    <tr><td>Deploy (Docker/Futuro)</td><td>✅ Concluído</td></tr>
   </tbody>
 </table>
 

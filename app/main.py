@@ -14,7 +14,7 @@ async def scrap(request: ScrapRequest):
         scraper = ServimedScraper(request.usuario, request.senha)
         await scraper.playwright_start()
         try:
-            produtos = await scraper._coletor_cadastros()
+            produtos = await scraper._coletor_cadastros("PARACETAMOL", "267511")
         except Exception as e:
             produtos = []
         await scraper.playwright_finish()
