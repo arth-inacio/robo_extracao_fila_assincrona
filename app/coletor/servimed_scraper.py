@@ -1,7 +1,7 @@
 import re
 import json
 from utils.storage import salvar_json_local
-from playwright.async_api import async_playwright
+from playwright.async_api import async_playwright, TimeoutError
 from typing import Any, Dict, List
 
 class ServimedScraper:
@@ -32,20 +32,25 @@ class ServimedScraper:
 
     async def _coletor_cadastros(self, termo_busca: str, cliente: str) -> list[dict]:
         itens = []
-        await self.page.goto(f"{self.url}login")
-        await self.page.wait_for_load_state("networkidle")
+        for _ in range(3):
+            await self.page.goto(f"{self.url}login")
+            await self.page.wait_for_load_state("networkidle")
 
-        await self.page.type("input[name=\"username\"]", self.usuario)
-        await self.page.type("input[name=\"password\"]", self.senha)
+            await self.page.type("input[name=\"username\"]", self.usuario)
+            await self.page.type("input[name=\"password\"]", self.senha)
 
-        # Clica no botao de login
-        await self.page.locator("button[class=\"btn btn-block btn-success\"]").click()
-        await self.page.wait_for_selector("button[class=\"swal2-cancel swal2-styled\"]")
-        await self.page.wait_for_load_state("networkidle")
+            try:
+                # Clica no botao de login
+                await self.page.locator("button[class=\"btn btn-block btn-success\"]").click()
+                await self.page.wait_for_selector("button[class=\"swal2-cancel swal2-styled\"]")
+                await self.page.wait_for_load_state("networkidle")
 
-        # Cancela o alerta de atualização dos dados
-        await self.page.locator("button[class=\"swal2-cancel swal2-styled\"]").click()
-        await self.page.wait_for_load_state("networkidle")
+                # Cancela o alerta de atualização dos dados
+                await self.page.locator("button[class=\"swal2-cancel swal2-styled\"]").click()
+                await self.page.wait_for_load_state("networkidle")
+            except TimeoutError:
+                continue
+            break
 
         # Clica em pedidos -> novo pedido
         await self.page.locator("a").filter(has_text="Pedidos").click()
