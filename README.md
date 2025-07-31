@@ -30,7 +30,7 @@ Client (API) → RabbitMQ (Queue) → Worker (Scraping) → Callback (FastAPI)
   <li><strong>FastAPI</strong> – API moderna e assíncrona</li>
   <li><strong>RabbitMQ</strong> – Gerenciamento de fila</li>
   <li><strong>Playwright</strong> – Robô de scraping assíncrono</li>
-  <li><strong>HTTPx & Requests</strong> – Requisições HTTP com suporte assíncrono</li>
+  <li><strong>Requests</strong> – Requisições HTTP</li>
   <li><strong>Uvicorn</strong> – Servidor ASGI para FastAPI</li>
   <li><strong>Pydantic</strong> – Validação de dados</li>
 </ul>
@@ -43,14 +43,13 @@ Client (API) → RabbitMQ (Queue) → Worker (Scraping) → Callback (FastAPI)
 desafio-python/
 ├── app/
 │ ├── worker.py # Worker que executa scraping via fila
-│ ├── enfileirador.py # Envia tarefas de scraping para a fila
+│ ├── publisher.py # Envia tarefas de scraping para a fila
 │ ├── coletor/
 │ │ └── servimed_scraper.py # Scraper Playwright
 │ ├── utils/
 │ │ ├── autenticador.py # Autenticação e callback
 │ │ └── storage.py # Salva JSON local
 │ └── .env # Variáveis de ambiente
-├── Dockerfile # Docker do projeto
 ├── docker-compose.yml # Orquestra rabbitmq + app
 ├── requirements.txt # Dependências
 └── README.md

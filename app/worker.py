@@ -64,7 +64,9 @@ class RabbitWorker:
             self._validate_payload(payload)
 
             # 1) Rodar seu scraper (async) → lista de produtos
+            logging.info("Iniciando scraper para termo: %s", payload.get("termo_busca"))
             produtos = asyncio.run(self._run_scraper(payload))
+            logging.info("Produtos coletados: %s", produtos)
 
             # 2) Disparar callback com os produtos
             callback = CallbackClient(

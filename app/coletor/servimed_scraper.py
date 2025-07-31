@@ -1,3 +1,4 @@
+import logging
 import re
 import json
 from utils.storage import salvar_json_local
@@ -92,6 +93,9 @@ class ServimedScraper:
     async def collect_products(self, termo_busca: str = "PARACETAMOL", cliente: str = "267511") -> List[Dict[str, Any]]:
         await self.playwright_start()
         try:
-            return await self._coletor_cadastros(termo_busca=termo_busca, cliente=cliente)
+            print(f"[SCRAPER] Iniciando busca: termo_busca={termo_busca}, cliente={cliente}")
+            produtos = await self._coletor_cadastros(termo_busca=termo_busca, cliente=cliente)
+            logging.info("[SCRAPER] Produtos encontrados: %s", produtos)
+            return produtos
         finally:
             await self.playwright_finish()
