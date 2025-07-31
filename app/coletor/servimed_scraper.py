@@ -14,8 +14,6 @@ class ServimedScraper:
     def __init__(self) -> None:
         self.usuario = SCRAPER_CREDENTIALS["username"]
         self.senha = SCRAPER_CREDENTIALS["password"]
-        print(self.usuario)
-        print(self.senha)
         self.playwright = None
         self.browser = None
         self.context = None

@@ -20,7 +20,7 @@ class CallbackClient:
         headers = {"Content-Type": "application/json"}
         if self.token:
             headers["Authorization"] = f"Bearer {self.token}"
-        r = requests.post(f"{self.base_url}", json=products, headers=headers, timeout=60)
+        r = requests.post(self.base_url, json=products, headers=headers, timeout=60)
         r.raise_for_status()
         logging.info("Callback OK: status=%s", r.status_code)
 
@@ -72,7 +72,7 @@ class RabbitWorker:
 
             # 2) Disparar callback com os produtos
             callback = CallbackClient(
-                base_url=payload["callback_url"],
+                base_url=f'{payload["callback_url"]}/produto',
                 token=auth_token,
             )
             callback.send_products(produtos)
@@ -90,7 +90,14 @@ class RabbitWorker:
         scraper = ServimedScraper()
         termo = payload.get("termo_busca", "PARACETAMOL")
         cliente = payload.get("cliente", "267511")
-        return await scraper.collect_products(termo_busca=termo, cliente=cliente)
+        produtos = await scraper.collect_products(termo_busca=termo, cliente=cliente)
+        produtos = [{
+            **prod,
+            "gtin": str(prod["gtin"]),
+            "codigo": str(prod["codigo"]),
+        }for prod in produtos]
+        return produtos
+ 
 
     @staticmethod
     def _validate_payload(payload: Dict[str, Any]) -> None:
