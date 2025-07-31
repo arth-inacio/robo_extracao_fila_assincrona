@@ -6,6 +6,7 @@ from typing import Any, Dict, Optional, List
 import pika
 import requests
 import asyncio
+from utils.autenticador import autenticar
 from app.coletor.servimed_scraper import ServimedScraper
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
@@ -19,7 +20,7 @@ class CallbackClient:
         headers = {"Content-Type": "application/json"}
         if self.token:
             headers["Authorization"] = f"Bearer {self.token}"
-        r = requests.post(self.base_url, json=products, headers=headers, timeout=60)
+        r = requests.post(f"{self.base_url}", json=products, headers=headers, timeout=60)
         r.raise_for_status()
         logging.info("Callback OK: status=%s", r.status_code)
 
@@ -56,7 +57,8 @@ class RabbitWorker:
                     self._conn.close()
             logging.info("Conexão encerrada.")
 
-    def _on_message(self, ch, method, properties, body: bytes) -> None:
+    def _on_message(self, ch, method, _, body: bytes) -> None:
+        auth_token = autenticar()
         try:
             payload = json.loads(body.decode())
             logging.info("Payload recebido: %s", payload)
@@ -71,7 +73,7 @@ class RabbitWorker:
             # 2) Disparar callback com os produtos
             callback = CallbackClient(
                 base_url=payload["callback_url"],
-                token=payload.get("auth_token"),
+                token=auth_token,
             )
             callback.send_products(produtos)
 
@@ -85,7 +87,7 @@ class RabbitWorker:
             ch.basic_nack(delivery_tag=method.delivery_tag, requeue=False)
 
     async def _run_scraper(self, payload: Dict[str, Any]) -> List[Dict[str, Any]]:
-        scraper = ServimedScraper(usuario=payload["usuario"], senha=payload["senha"])
+        scraper = ServimedScraper()
         termo = payload.get("termo_busca", "PARACETAMOL")
         cliente = payload.get("cliente", "267511")
         return await scraper.collect_products(termo_busca=termo, cliente=cliente)

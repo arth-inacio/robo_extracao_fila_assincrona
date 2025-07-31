@@ -1,12 +1,15 @@
 import os
 import json
 import pika
+from utils.secrets import API_CREDENTIALS
 
 
 class RabbitEnqueuer:
     def __init__(self, amqp_url: str, queue: str):
         self.amqp_url = amqp_url
         self.queue = queue
+        self._user = API_CREDENTIALS["username"]
+        self._password = API_CREDENTIALS["password"]
 
     def enqueue(self, payload: dict) -> None:
         conn = pika.BlockingConnection(pika.URLParameters(self.amqp_url))
@@ -26,8 +29,6 @@ class RabbitEnqueuer:
 
     def enqueue_multiple_termos(
         self,
-        usuario: str,
-        senha: str,
         callback_url: str,
         termos: list[str],
         cliente: str = "267511",
@@ -35,8 +36,8 @@ class RabbitEnqueuer:
     ) -> None:
         for termo in termos:
             payload = {
-                "usuario": usuario,
-                "senha": senha,
+                "usuario": self._user,
+                "senha": self._password,
                 "callback_url": callback_url,
                 "termo_busca": termo,
                 "cliente": cliente,
@@ -54,8 +55,6 @@ if __name__ == "__main__":
     enq = RabbitEnqueuer(AMQP_URL, QUEUE)
     termos = ["PARACETAMOL", "DIPIRONA", "IBUPROFENO"]
     enq.enqueue_multiple_termos(
-        usuario="juliano@farmaprevonline.com.br",
-        senha="a007299A",
         callback_url="https://desafio.cotefacil.net",
         termos=termos,
     )

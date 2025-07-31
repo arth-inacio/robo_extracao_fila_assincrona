@@ -4,15 +4,18 @@ import json
 from utils.storage import salvar_json_local
 from playwright.async_api import async_playwright, TimeoutError
 from typing import Any, Dict, List
+from utils.secrets import SCRAPER_CREDENTIALS
 
 class ServimedScraper:
     usuario: str
     senha: str
     url = "https://pedidoeletronico.servimed.com.br/"
 
-    def __init__(self, usuario: str, senha: str) -> None:
-        self.usuario = usuario
-        self.senha = senha
+    def __init__(self) -> None:
+        self.usuario = SCRAPER_CREDENTIALS["username"]
+        self.senha = SCRAPER_CREDENTIALS["password"]
+        print(self.usuario)
+        print(self.senha)
         self.playwright = None
         self.browser = None
         self.context = None
@@ -50,6 +53,7 @@ class ServimedScraper:
                 await self.page.locator("button[class=\"swal2-cancel swal2-styled\"]").click()
                 await self.page.wait_for_load_state("networkidle")
             except TimeoutError:
+                print("🔄 Tentativa de login falhou, tentando novamente...")
                 continue
             break
 
