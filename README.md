@@ -97,6 +97,11 @@ export QUEUE="tarefas.servimed"
 python -m app.worker
 </code></pre>
 
+<h3>7. Execute o Enfileirador/Publisher </h3>
+<pre><code>
+python -m app.publisher
+</code></pre>
+
 <hr>
 
 <h2>🔐 Autenticação (Callback)</h2>
