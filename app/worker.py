@@ -1,4 +1,3 @@
-# app/worker_rabbit.py
 import os
 import json
 import logging
@@ -111,3 +110,4 @@ if __name__ == "__main__":
     QUEUE = os.getenv("QUEUE", "tarefas.servimed")
     PREFETCH = int(os.getenv("PREFETCH", "1"))
     RabbitWorker(AMQP_URL, QUEUE, PREFETCH).start()
+
