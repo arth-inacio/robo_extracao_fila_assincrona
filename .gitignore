@@ -1,6 +1,3 @@
 .venv/
-<<<<<<< HEAD
 venv/
-=======
->>>>>>> 5e20d6f (feat[servimed]: Adicionando arquivo para rodar spider loval & adicionando gitignore)
 __pycache__/
